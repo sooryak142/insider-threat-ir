@@ -1,0 +1,156 @@
+# =============================================================================
+# Detection rules derived from case KBS-IR-2026-017
+# Insider Threat, Privilege Abuse & Data Exfiltration Response — Group 5
+#
+# Format: Sigma (https://github.com/SigmaHQ/sigma). These are DEFENSIVE
+# detection rules intended for a SIEM. All field values reference the
+# simulated academic case; tune to your environment before use.
+#
+# The four rules below map to the gaps found in the timeline: the
+# privilege change on 18 Sep went unalerted, and the staging / tamper /
+# log-clearing steps each deserve their own detection.
+# =============================================================================
+
+---
+title: Self-Service Addition to a Restricted Security Group
+id: kbs-ir-2026-017-01
+status: experimental
+description: >
+  A user account is added to a protected/restricted security group, where the
+  actor and the target member are the same principal, or the actor is not a
+  member of the authorised identity-administration team. Catches privilege
+  self-escalation using leftover rights.
+references:
+  - https://attack.mitre.org/techniques/T1098/
+author: Group 5 (Fathimat Afreen, Sajay Chandran)
+date: 2026/10/09
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4728   # member added to a security-enabled global group
+    TargetGroupName:
+      - 'RD-Formulations-RW'
+      - 'Domain Admins'
+      - 'Enterprise Admins'
+  filter_authorised_admins:
+    SubjectUserName: '%authorised_identity_admins%'
+  condition: selection and not filter_authorised_admins
+falsepositives:
+  - Legitimate changes performed outside the identity-admin team during a migration
+level: high
+tags:
+  - attack.persistence
+  - attack.t1098
+  - insider-threat
+
+---
+title: Mass File-Share / Repository Read Far Above Baseline
+id: kbs-ir-2026-017-02
+status: experimental
+description: >
+  A single account reads or downloads an abnormal number of files from a
+  sensitive share or repository within a short window, well above its rolling
+  baseline. Behavioural staging/collection indicator.
+references:
+  - https://attack.mitre.org/techniques/T1039/
+  - https://attack.mitre.org/techniques/T1213/002/
+author: Group 5 (Surya Krishnan E U)
+date: 2026/10/09
+logsource:
+  product: windows
+  service: security
+detection:
+  selection:
+    EventID: 4663
+    ObjectType: File
+    AccessMask: '0x1'            # read
+    SharePath|contains: '\RD\Formulations'
+  timeframe: 1h
+  condition: selection | count(ObjectName) by SubjectUserName > 200
+falsepositives:
+  - Bulk migration, backup or indexing service accounts (exclude via allowlist)
+level: high
+tags:
+  - attack.collection
+  - attack.t1039
+  - attack.t1213.002
+  - insider-threat
+
+---
+title: Creation of Large Password-Protected Split Archives
+id: kbs-ir-2026-017-03
+status: experimental
+description: >
+  An archiving tool (especially a portable copy outside the standard image)
+  produces password-protected, multi-volume archives whose contents cannot be
+  inspected by DLP. Staging-for-exfiltration indicator. Detection is on the
+  behaviour pattern, not on blocking legitimate archiving.
+references:
+  - https://attack.mitre.org/techniques/T1560/001/
+author: Group 5 (Surya Krishnan E U)
+date: 2026/10/09
+logsource:
+  category: process_creation
+  product: windows
+detection:
+  selection_tool:
+    Image|endswith:
+      - '\7z.exe'
+      - '\7za.exe'
+      - '\rar.exe'
+      - '\WinRAR.exe'
+  selection_flags:
+    CommandLine|contains|all:
+      - ' a '          # add-to-archive action
+      - '-p'           # password supplied
+  selection_split:
+    CommandLine|contains:
+      - '-v'           # volume split
+      - '-mhe'         # header encryption
+  filter_std_image:
+    Image|startswith: 'C:\Program Files\7-Zip\'
+  condition: selection_tool and selection_flags and selection_split and not filter_std_image
+falsepositives:
+  - Approved backup jobs that legitimately produce encrypted archives (allowlist the job account/path)
+level: high
+tags:
+  - attack.collection
+  - attack.t1560.001
+  - insider-threat
+
+---
+title: Endpoint Defense Tampering or Security Log Clearing
+id: kbs-ir-2026-017-04
+status: experimental
+description: >
+  Attempts to stop/disable the DLP or EDR agent service, or clearing of the
+  Windows Security event log by a non-administrative workstation account.
+  Anti-forensics / defense-evasion indicator.
+references:
+  - https://attack.mitre.org/techniques/T1562/001/
+  - https://attack.mitre.org/techniques/T1070/001/
+author: Group 5 (Gayathri Shajan, Sajay Chandran)
+date: 2026/10/09
+logsource:
+  product: windows
+  service: security
+detection:
+  selection_logclear:
+    EventID: 1102      # the audit log was cleared
+  selection_svc_tamper:
+    EventID: 7040      # service start type changed
+    ServiceName:
+      - 'DLPAgentSvc'
+      - 'EDRSensor'
+    StartType: 'disabled'
+  condition: selection_logclear or selection_svc_tamper
+falsepositives:
+  - Authorised maintenance by the security-operations team (correlate with change tickets)
+level: high
+tags:
+  - attack.defense_evasion
+  - attack.t1562.001
+  - attack.t1070.001
+  - insider-threat

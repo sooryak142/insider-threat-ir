@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>Forensics · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="forensics">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 06</div>
+      <h1>Forensic Evidence &amp; Chain of Custody</h1>
+      <p class="lead">Evidence preserved during containment, the Windows artefacts that reconstructed the activity, and the
+      removable-media audit. Everything here is hash-verified so the evidence stands up to challenge.</p>
+      <span class="owner">Owner: <b>Surya Krishnan E U</b> — endpoint artefacts &amp; removable-media auditing</span>
+    </section>
+
+    <h2>Evidence register &amp; chain of custody</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>ID</th><th>Item</th><th>Acquired</th><th>Method</th><th>SHA-256 (image)</th><th>Held by</th></tr></thead>
+        <tbody>
+          <tr><td class="mono">EV-01</td><td>Laptop KBS-LT-0412 disk image</td><td>28 Sep 14:20</td><td>Write-blocked E01 acquisition</td><td><code>b08288269958404f3f7b0585d8261ccac4e7f7a16d1645f7752ebaf881c83a24</code></td><td>Surya → evidence locker</td></tr>
+          <tr><td class="mono">EV-02</td><td>Log export bundle (VPN, proxy, DLP, SIEM, AD)</td><td>28 Sep 15:05</td><td>Signed export, hashed</td><td><code>193e9c25b692f3b6ab023743fafeadfdda4e6007eca9a50c6ba596d6e4aae4d8</code></td><td>Sajay</td></tr>
+          <tr><td class="mono">EV-03</td><td>USB drive (Kingston DataTraveler) image</td><td>30 Sep 10:30</td><td>Write-blocked acquisition after recovery</td><td><code>8f127c2f7511947db6a5f7e67f7322ee3599e9e173b2286fa8c147f28aca85c3</code></td><td>Surya → evidence locker</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="callout"><b>Custody principle:</b> each item was hashed at acquisition; the same hash is re-computed before any analysis
+    so the team can prove the evidence was not altered. Analysis is always performed on a copy, never the original.</p>
+
+    <h2>Windows artefacts that reconstructed the activity</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Artefact</th><th>What it showed</th><th>Supports</th></tr></thead>
+        <tbody>
+          <tr><td class="nowrap">Security event log (via SIEM copy)</td><td>Logon events, the group-membership change (EID 4728), and the later log-clear (EID 1102)</td><td><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1098/" target="_blank" rel="noopener">T1098</a> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1070/001/" target="_blank" rel="noopener">T1070.001</a></td></tr>
+          <tr><td class="nowrap">$MFT / $LogFile</td><td>Creation and later deletion of the staging folder; recovered the cleanup script from unallocated space</td><td><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1074/001/" target="_blank" rel="noopener">T1074.001</a></td></tr>
+          <tr><td class="nowrap">Prefetch / Amcache</td><td>Execution of the portable archiver, including first-run time</td><td><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td></tr>
+          <tr><td class="nowrap">SRUM (System Resource Usage)</td><td>Per-app network egress — large outbound volume attributed to the browser upload</td><td><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td></tr>
+          <tr><td class="nowrap">Registry: USBSTOR + setupapi log</td><td>First/last-connect times and serial of the personal USB drive</td><td><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1052/001/" target="_blank" rel="noopener">T1052.001</a></td></tr>
+          <tr><td class="nowrap">Browser history &amp; cache</td><td>Visits to the cloud-storage upload page in the relevant window</td><td><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Removable-media audit</h2>
+    <div class="grid grid-2">
+      <div class="card">
+        <h3>Device identified</h3>
+        <ul class="tight">
+          <li><b>Device:</b> Kingston DataTraveler 3.0</li>
+          <li><b>Serial:</b> <code>E0D55EA5741F</code></li>
+          <li><b>First connect:</b> 27 Sep 2026 13:02 IST</li>
+          <li><b>Write volume:</b> 4.3 GB (three archive volumes)</li>
+          <li><b>Policy state:</b> R&D device control in <b>audit</b> mode — write logged, not blocked</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Recovered file hashes</h3>
+        <p>The archive volumes recovered from EV-03 matched the hashes already watch-listed from the endpoint, tying the USB contents
+        to the staged data:</p>
+        <ul class="tight">
+          <li><code>115b80d86e6d0909b23af7cc…</code> — volume 1</li>
+          <li><code>5bd14d23b268ac9a037aad66…</code> — volume 2</li>
+          <li><code>53ae847aba07c6bf20cd3e3f…</code> — volume 3</li>
+        </ul>
+        <p>Full values are in the <a href="../indicators/ioc-matrix.html">IOC matrix</a> (filter: <i>SHA-256</i>), alongside the
+        cleanup-script hash.</p>
+      </div>
+    </div>
+
+    <h2>Integrity statement</h2>
+    <p class="callout ok">All exhibits were acquired with write-blocking, hashed at acquisition, and stored in the evidence locker with
+    a signed custody log. No original media was mounted read-write. This supports admissibility should the matter proceed to
+    employment action or legal referral — which is handled by HR and Legal, not the IR team.</p>
+
+    <div class="pager"><a href="../dossier/dlp-exfiltration.html">&larr; DLP &amp; Exfil</a><a href="../dossier/playbook.html">Playbook &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

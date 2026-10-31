@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>Case Summary · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="summary">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 01</div>
+      <h1>Case Summary &amp; Threat Actor Attribution</h1>
+      <p class="lead">Executive summary, scope, impact and attribution for case KBS-IR-2026-017.</p>
+      <span class="owner">Owner: <b>Sajay Chandran</b> — IR Lead</span>
+    </section>
+
+    <div class="table-wrap">
+      <table>
+        <tbody>
+          <tr><th style="width:230px">Case ID</th><td class="mono">KBS-IR-2026-017</td></tr>
+          <tr><th>Organisation</th><td>Kaveri Biosciences Pvt. Ltd. (fictional) — pharmaceutical R&amp;D, Bengaluru, ~850 staff</td></tr>
+          <tr><th>Incident type</th><td>Insider threat → privilege abuse → intellectual-property &amp; personal-data exfiltration</td></tr>
+          <tr><th>Severity</th><td><span class="badge b-crit">P1 – Critical</span> — restricted IP and clinical-trial participant data left the organisation</td></tr>
+          <tr><th>Activity window</th><td>16 Sep 2026 → 28 Sep 2026 (IST)</td></tr>
+          <tr><th>Detected</th><td>26 Sep 2026 23:58 IST — UBA risk score crossed the critical threshold (alert UBA-3341), correlated with DLP alert DLP-ALR-5521</td></tr>
+          <tr><th>Contained</th><td>28 Sep 2026 11:45 IST — account disabled, VPN certificate revoked, laptop isolated</td></tr>
+          <tr><th>Closed</th><td>09 Oct 2026 — lessons-learned review complete</td></tr>
+          <tr><th>Subject</th><td>Employee <b>E-2231</b> (pseudonymised) — Senior Formulation Data Analyst, R&amp;D; 6 years' tenure, previously 2 years in IT Operations</td></tr>
+          <tr><th>Assets affected</th><td>R&amp;D file share <code>\\KBS-FS01\RD\Formulations</code>, SharePoint site <i>Clinical-Trials-PhaseII</i>, the subject's mailbox, and laptop <code>KBS-LT-0412</code></td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Executive summary</h2>
+    <p>Shortly after employee E-2231 resigned to join a competitor, monitoring flagged a change in his behaviour: repeated
+    late-night remote logins that did not match his six-month baseline. Investigation showed that his account held membership of an
+    IT support group that should have been removed when he transferred out of IT Operations in 2024. That leftover access let him
+    place his own account into a restricted R&amp;D group he had no current business need for.</p>
+    <p>Over the following week the account performed <b>bulk reads</b> far above the department norm — across the formulation file
+    share, a Phase II clinical-trial SharePoint site, and a full export of his own mailbox. The collected data was consolidated and
+    compressed into large <b>encrypted archives</b>, which is what made the activity stand out: the endpoint agent reported an
+    archiving tool producing password-protected volumes whose contents DLP could not inspect. Part of the data was then uploaded to a
+    newly registered personal cloud service, and the full set was copied to a personal USB drive during a weekend office visit.</p>
+    <p>On the final night the subject attempted to interfere with monitoring — a service-control attempt against the DLP agent and a
+    clearing of the local Windows Security log. Both were detected: tamper protection blocked the first, and the SIEM already held a
+    forwarded copy of the logs, so no evidence was lost. The IR team declared a P1 incident, disabled the account, revoked its VPN
+    certificate and isolated the laptop within the same morning.</p>
+
+    <div class="grid grid-3">
+      <div class="callout crit"><h3>Confidentiality</h3><p>4.3 GB of restricted formulation IP and Phase II clinical-trial data (including participant personal data) left the controlled environment.</p></div>
+      <div class="callout warn"><h3>Integrity</h3><p>No evidence of data being altered. Source repositories were read, not modified; file-share and SharePoint contents verified intact.</p></div>
+      <div class="callout ok"><h3>Availability</h3><p>No outage. Business systems stayed up throughout; impact is confined to data confidentiality and regulatory exposure.</p></div>
+    </div>
+
+    <h2>Business &amp; regulatory impact</h2>
+    <ul class="tight">
+      <li><b>Intellectual property:</b> formulation datasets represent multi-year R&amp;D investment; loss to a competitor is the primary business risk.</li>
+      <li><b>Personal data (DPDP Act 2023):</b> the Phase II data set includes clinical-trial participant identifiers, triggering a data-protection assessment and likely notification to the Data Protection Board and affected principals.</li>
+      <li><b>CERT-In (28 Apr 2022 Directions):</b> unauthorised data exfiltration is a reportable incident within 6 hours of detection; reported on 27 Sep at 02:40 IST.</li>
+      <li><b>Legal / HR:</b> evidence preserved to support employment action and potential civil/criminal referral; handled by Legal, not the IR team.</li>
+    </ul>
+
+    <h2>Threat actor attribution</h2>
+    <p>Attribution is assessed as a <b>malicious insider — a departing employee acting alone</b>, with <b>high confidence</b>. The
+    reasoning follows the evidence rather than assumption:</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Line of evidence</th><th>What it showed</th><th>Points to</th></tr></thead>
+        <tbody>
+          <tr><td>Authentication logs</td><td>All sessions used the subject's own valid credentials and MFA, from his home IP — no sign of a stolen or shared account</td><td>Insider, not a compromised account</td></tr>
+          <tr><td>Timing</td><td>Activity began 2 days after resignation and ended on his last working day; concentrated in off-hours</td><td>Departing-employee motive</td></tr>
+          <tr><td>Access path</td><td>Self-service privilege grant using his own leftover IT group membership — no external foothold or malware delivery</td><td>Abuse of legitimate access</td></tr>
+          <tr><td>Scope</td><td>Targeted exactly the formulation + clinical-trial data relevant to the competitor's product line</td><td>Deliberate, informed selection</td></tr>
+          <tr><td>Anti-forensics</td><td>Attempts to disable DLP and clear logs show awareness of monitoring — consistent with a technically literate insider</td><td>Intent, not accident</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="callout"><b>Alternatives considered and rejected:</b> account compromise (no anomalous geolocation, impossible-travel or
+    credential-theft indicators); accidental over-collection (the archiving, encryption and anti-forensic steps are inconsistent with
+    innocent activity); third-party collusion (no second account or external handler observed in scope — left open for HR/Legal follow-up).</p>
+
+    <h2>Root cause</h2>
+    <div class="grid grid-2">
+      <div class="card"><h3>Primary</h3><p><b>Stale privileged access.</b> Group membership from a prior role was never revoked, defeating least-privilege and enabling self-escalation. A joiner-mover-leaver (JML) access review would have caught it.</p></div>
+      <div class="card"><h3>Contributing</h3>
+        <ul class="tight">
+          <li>No heightened monitoring for employees under notice period.</li>
+          <li>USB policy for R&amp;D was in <i>audit</i> mode, not <i>block</i>.</li>
+          <li>Newly registered destination domain was uncategorised and therefore allowed by the web proxy.</li>
+          <li>No approval workflow on changes to restricted security groups.</li>
+        </ul>
+      </div>
+    </div>
+
+    <h2>Recommendations</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th class="nowrap">Priority</th><th>Recommendation</th><th>Addresses</th></tr></thead>
+        <tbody>
+          <tr><td><span class="badge b-crit">Now</span></td><td>Quarterly JML access recertification; auto-expire group memberships on role change</td><td>Primary root cause</td></tr>
+          <tr><td><span class="badge b-crit">Now</span></td><td>Approval workflow + alerting on any change to restricted security groups</td><td>Privilege abuse</td></tr>
+          <tr><td><span class="badge b-high">30 days</span></td><td>"Leaver watch" — raised UBA sensitivity and DLP enforcement for staff under notice</td><td>Detection gap</td></tr>
+          <tr><td><span class="badge b-high">30 days</span></td><td>Move R&amp;D USB policy from audit to block; allow only encrypted, approved devices</td><td>USB channel</td></tr>
+          <tr><td><span class="badge b-med">90 days</span></td><td>Block newly registered / uncategorised domains for high-sensitivity groups; tune DLP to treat large encrypted uploads as high-risk</td><td>Cloud channel</td></tr>
+          <tr><td><span class="badge b-med">90 days</span></td><td>Deploy the four Sigma detections from this case to the SIEM; add them to the IR runbook</td><td>Repeatability</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="pager"><a href="../index.html">&larr; Overview</a><a href="../dossier/timeline.html">Timeline &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

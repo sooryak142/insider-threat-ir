@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>Playbook · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="playbook">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 07</div>
+      <h1>Triage &amp; Incident Response Playbook</h1>
+      <p class="lead">The repeatable procedure used for this case, structured on the NIST SP 800-61 lifecycle. This is the artefact
+      the IR Lead defends in the walkthrough: given the alert, what we did, in what order, and why.</p>
+      <span class="owner">Owner: <b>Sajay Chandran</b> — IR Lead</span>
+    </section>
+
+    <h2>Triage decision flow</h2>
+    <p>When an insider-threat alert fires, the on-call analyst works top to bottom. The goal of triage is a fast, defensible
+    <b>true-positive / false-positive</b> call and the right severity.</p>
+    <div class="flow">
+      <div class="step"><b>1 · Validate</b><span>Is the alert a true positive? Confirm the account, the actions and the data touched against raw logs.</span></div>
+      <div class="step"><b>2 · Classify</b><span>Insider vs. compromised account? Check identity signals (geo, MFA, device).</span></div>
+      <div class="step s-high"><b>3 · Score severity</b><span>What data, how much, did it leave? Sensitive data + egress = P1.</span></div>
+      <div class="step s-crit"><b>4 · Escalate</b><span>P1 → page IR Lead, open case, start evidence clock, notify Legal/HR.</span></div>
+      <div class="step s-crit"><b>5 · Contain</b><span>Disable access, isolate host — only after evidence capture is agreed.</span></div>
+    </div>
+
+    <div class="decision"><b>Decision gate — is this an insider or a hijacked account?</b> If identity signals are clean (consistent
+    geo, MFA satisfied on the enrolled device, known hardware) → treat as <b>insider</b>: preserve evidence, loop in HR/Legal, and
+    avoid tipping off the subject. If signals are anomalous → treat as <b>account compromise</b>: force credential reset and hunt for
+    the external foothold. This case went down the insider branch.</div>
+
+    <h2>Response phases (NIST SP 800-61)</h2>
+
+    <details class="phase" open>
+      <summary>1 · Preparation (what was already in place)</summary>
+      <div class="body">
+        <ol class="steps">
+          <li>UBA baselining, DLP policies, EDR with tamper protection, SIEM log forwarding, device-control auditing.</li>
+          <li>This IR playbook, an evidence locker, and named roles (IR Lead, forensics, DLP, UBA).</li>
+          <li>Pre-agreed contacts for HR, Legal and CERT-In reporting.</li>
+        </ol>
+        <p class="callout warn">Gap found later: no automatic "leaver watch" for staff under notice. Added as a recommendation.</p>
+      </div>
+    </details>
+
+    <details class="phase" open>
+      <summary>2 · Detection &amp; Analysis</summary>
+      <div class="body">
+        <ol class="steps">
+          <li>Critical UBA alert (UBA-3341) auto-correlated with DLP-ALR-5521 and paged the on-call analyst.</li>
+          <li>Validated true positive: confirmed bulk reads, the privilege change, encrypted archiving and the upload against raw logs.</li>
+          <li>Classified as insider using identity signals (see <a href="uba-analysis.html">UBA</a>).</li>
+          <li>Built the <a href="timeline.html">timeline</a>, extracted <a href="../indicators/ioc-matrix.html">IOCs</a>, mapped to <a href="attack-mapping.html">ATT&amp;CK</a>.</li>
+          <li>Scored severity P1 (sensitive IP + regulated personal data confirmed to have left).</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="phase" open>
+      <summary>3 · Containment</summary>
+      <div class="body">
+        <p><b>Short-term (executed 28 Sep 11:45 IST):</b></p>
+        <ol class="steps">
+          <li>Capture volatile evidence and agree the image plan <i>before</i> isolating (so nothing is lost).</li>
+          <li>Disable the account; revoke all active sessions and tokens; revoke the VPN certificate.</li>
+          <li>Network-isolate the laptop via EDR (keeps it powered for forensics but cut off from the network).</li>
+          <li>Block the destination domains/IPs at proxy and firewall; block the USB device ID.</li>
+        </ol>
+        <div class="decision"><b>Why disable, not delete:</b> the account and its mailbox are evidence. Disabling preserves them;
+        deletion would destroy the record and tip off the subject.</div>
+      </div>
+    </details>
+
+    <details class="phase">
+      <summary>4 · Eradication</summary>
+      <div class="body">
+        <ol class="steps">
+          <li>Remove the improper group membership and audit the restricted group for any other anomalies.</li>
+          <li>Org-wide sweep for stale privileged memberships from past role changes; revoke what is unneeded.</li>
+          <li>Confirm no persistence or secondary accounts were created (none found in scope).</li>
+          <li>Add the four <a href="../indicators/detections.yml">Sigma detections</a> to the SIEM.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="phase">
+      <summary>5 · Recovery</summary>
+      <div class="body">
+        <ol class="steps">
+          <li>Verify source repositories are intact (read-only access confirmed; no tampering).</li>
+          <li>Move R&D USB policy to block; enable newly-registered-domain blocking for sensitive groups.</li>
+          <li>Send a preservation / takedown request to the cloud-storage provider for the uploaded data.</li>
+          <li>Return monitoring to normal; keep heightened watch on related accounts for 30 days.</li>
+        </ol>
+      </div>
+    </details>
+
+    <details class="phase">
+      <summary>6 · Post-Incident (lessons learned)</summary>
+      <div class="body">
+        <ol class="steps">
+          <li>Root cause agreed: stale privileged access (see <a href="case-summary.html">case summary</a>).</li>
+          <li>Six recommendations issued with owners and due dates.</li>
+          <li>Metrics recorded: 10-day dwell, 36 h 47 m to containment — targets set to cut both.</li>
+          <li>Detections and this playbook updated so the next case is caught at the privilege-change step.</li>
+        </ol>
+      </div>
+    </details>
+
+    <h2>Notification obligations</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Who</th><th>Trigger</th><th>Timing</th><th>Status</th></tr></thead>
+        <tbody>
+          <tr><td>CERT-In</td><td>Unauthorised data exfiltration</td><td>Within 6 hours of detection</td><td><span class="badge b-low">Filed 27 Sep 02:40</span></td></tr>
+          <tr><td>HR &amp; Legal</td><td>Suspected malicious insider</td><td>At P1 declaration</td><td><span class="badge b-low">Done</span></td></tr>
+          <tr><td>Data Protection Officer</td><td>Personal data (DPDP Act 2023) involved</td><td>Assessment on scope confirmation</td><td><span class="badge b-med">Assessment opened</span></td></tr>
+          <tr><td>Executive / CISO</td><td>P1 incident</td><td>Immediate</td><td><span class="badge b-low">Briefed</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="callout"><b>IR Lead's defence in one line:</b> we detected on compounded behaviour, proved insider abuse from identity
+    evidence, preserved forensics before containing, closed both successful channels, and turned the gaps into detections — so the
+    same actor would now be caught at the privilege-change step on day one.</p>
+
+    <div class="pager"><a href="../dossier/forensic-evidence.html">&larr; Forensics</a><span></span></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

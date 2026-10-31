@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>UBA · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="uba">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 04</div>
+      <h1>User Behaviour Analytics (UBA)</h1>
+      <p class="lead">How the behaviour engine turned a set of individually-ordinary actions into a single critical alert — and how
+      the identity evidence confirmed credential <i>abuse</i> rather than credential <i>theft</i>.</p>
+      <span class="owner">Owner: <b>Fathimat Afreen</b> — UBA &amp; credential-abuse detection</span>
+    </section>
+
+    <h2>Daily risk score</h2>
+    <p>The engine scores each account daily on deviation from its own 90-day baseline and its peer group. Alert threshold is 90.
+    No single day's action was damning; the <b>cumulative</b> pattern crossed the line on 26 Sep.</p>
+    <div class="bars"><div class="bar" title="16 Sep: risk 38"><span class="val">38</span><div class="fill " style="height:38%"></div></div><div class="bar" title="17 Sep: risk 35"><span class="val">35</span><div class="fill " style="height:35%"></div></div><div class="bar" title="18 Sep: risk 61 — privilege change"><span class="val">61</span><div class="fill " style="height:61%"></div></div><div class="bar" title="19 Sep: risk 44"><span class="val">44</span><div class="fill " style="height:44%"></div></div><div class="bar" title="20 Sep: risk 58 — share discovery"><span class="val">58</span><div class="fill " style="height:57%"></div></div><div class="bar" title="21 Sep: risk 40"><span class="val">40</span><div class="fill " style="height:40%"></div></div><div class="bar" title="22 Sep: risk 66 — mailbox export"><span class="val">66</span><div class="fill " style="height:66%"></div></div><div class="bar" title="23 Sep: risk 74 — bulk reads"><span class="val">74</span><div class="fill warn" style="height:74%"></div></div><div class="bar" title="24 Sep: risk 83 — archiving"><span class="val">83</span><div class="fill warn" style="height:83%"></div></div><div class="bar" title="25 Sep: risk 88 — DLP tamper"><span class="val">88</span><div class="fill warn" style="height:88%"></div></div><div class="bar" title="26 Sep: risk 96 — upload + ALERT"><span class="val">96</span><div class="fill crit" style="height:96%"></div></div><div class="bar" title="27 Sep: risk 92 — USB copy"><span class="val">92</span><div class="fill crit" style="height:92%"></div></div><div class="bar" title="28 Sep: risk 90 — log clear"><span class="val">90</span><div class="fill crit" style="height:90%"></div></div></div>
+    <div class="bars-x"><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span></div>
+    <p class="threshold-note">▬ ≥90 critical (alert) · ▬ 70–89 elevated · baseline for this user ≈ 30–40. Hover a bar for the driver.</p>
+
+    <h2>Baseline vs. observed (26 Sep)</h2>
+    <div class="hbar">
+      <div class="row"><div>Logins outside 09:00–18:30</div><div class="track"><span class="crit" style="width:100%"></span></div><div class="v">100% of sessions (baseline: rare)</div></div>
+      <div class="row"><div>Distinct sensitive files read / day</div><div class="track"><span class="crit" style="width:98%"></span></div><div class="v">920 peak (baseline: ~15)</div></div>
+      <div class="row"><div>Data egress to internet / day</div><div class="track"><span class="crit" style="width:95%"></span></div><div class="v">3.0 GB (baseline: ~80 MB)</div></div>
+      <div class="row"><div>Security groups modified / month</div><div class="track"><span class="warn" style="width:45%"></span></div><div class="v">1 self-add (baseline: 0)</div></div>
+      <div class="row"><div>Removable-media writes / month</div><div class="track"><span class="crit" style="width:90%"></span></div><div class="v">4.3 GB (baseline: 0)</div></div>
+    </div>
+
+    <h2>Credential abuse vs. credential theft</h2>
+    <p>A central question for attribution: was this the real user, or someone using his stolen account? The identity evidence points
+    firmly to <b>abuse by the legitimate owner</b>.</p>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Signal</th><th>Observation</th><th>Reading</th></tr></thead>
+        <tbody>
+          <tr><td>Source geolocation</td><td>Single consistent home ISP IP (203.0.113.45), same city as residence on file</td><td>No impossible travel → not a remote attacker</td></tr>
+          <tr><td>MFA</td><td>Every session satisfied push MFA on the subject's enrolled device, approved in seconds</td><td>Device possession → the owner himself</td></tr>
+          <tr><td>Device &amp; user agent</td><td>Same corporate laptop and browser fingerprint as his normal work</td><td>No new/unknown device</td></tr>
+          <tr><td>Failed-login pattern</td><td>No brute force, password spray or anomalous auth failures beforehand</td><td>No compromise precursor</td></tr>
+          <tr><td>Behaviour</td><td>Actions required insider knowledge of exactly where the valuable data lived</td><td>Familiarity consistent with the employee</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="callout ok">Conclusion: <b>credential abuse by the account owner</b>, assessed high confidence. This matters for
+    response — the fix is identity governance and offboarding, not a password reset.</p>
+
+    <h2>Techniques surfaced by UBA</h2>
+    <p><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1078/002/" target="_blank" rel="noopener">T1078.002</a> Valid Accounts · <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1098/" target="_blank" rel="noopener">T1098</a> Account Manipulation · <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1133/" target="_blank" rel="noopener">T1133</a> External Remote Services —
+    behavioural analytics is the right lens for these because none of them involves malware for antivirus to catch.</p>
+
+    <div class="pager"><a href="../indicators/ioc-matrix.html">&larr; IOC Matrix</a><a href="../dossier/dlp-exfiltration.html">DLP &amp; Exfil &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

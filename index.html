@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>Overview · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body data-page="home">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="index.html" data-page="home">Overview</a>
+        <a href="dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head" style="margin-top:20px">
+      <div class="eyebrow">Group 5 · Incident Response &amp; Triage Dossier</div>
+      <h1>Insider Threat, Privilege Abuse &amp; Data Exfiltration Response</h1>
+      <p class="lead">A departing R&amp;D analyst at <b>Kaveri Biosciences Pvt. Ltd.</b> (a fictional Bengaluru pharmaceutical
+      company) abused leftover IT privileges to exfiltrate restricted formulation and clinical-trial data. This dossier covers how
+      the activity was detected, analysed, contained and defended.</p>
+      <span class="owner">Case <b>KBS-IR-2026-017</b> · Severity <span class="badge b-crit">P1 – Critical</span> · Status <span class="badge b-low">Closed</span></span>
+    </section>
+
+    <section class="grid grid-4">
+      <div class="card stat crit"><div class="num">4.3 GB</div><div class="label">Data exfiltrated</div></div>
+      <div class="card stat high"><div class="num">2,454</div><div class="label">Restricted files accessed</div></div>
+      <div class="card stat info"><div class="num">14</div><div class="label">ATT&amp;CK techniques</div></div>
+      <div class="card stat ok"><div class="num">20</div><div class="label">Indicators (IOCs)</div></div>
+    </section>
+
+    <h2>Sections</h2>
+    <div class="grid grid-3">
+      <a class="card" href="dossier/case-summary.html"><h3>Case Summary</h3><span class="go">Open →</span></a>
+      <a class="card" href="dossier/timeline.html"><h3>Timeline</h3><span class="go">Open →</span></a>
+      <a class="card" href="dossier/attack-mapping.html"><h3>ATT&amp;CK Mapping</h3><span class="go">Open →</span></a>
+      <a class="card" href="indicators/ioc-matrix.html"><h3>IOC Matrix</h3><span class="go">Open →</span></a>
+      <a class="card" href="dossier/uba-analysis.html"><h3>UBA Analysis</h3><span class="go">Open →</span></a>
+      <a class="card" href="dossier/dlp-exfiltration.html"><h3>DLP &amp; Exfiltration</h3><span class="go">Open →</span></a>
+      <a class="card" href="dossier/forensic-evidence.html"><h3>Forensic Evidence</h3><span class="go">Open →</span></a>
+      <a class="card" href="dossier/playbook.html"><h3>Response Playbook</h3><span class="go">Open →</span></a>
+      <a class="card" href="indicators/detections.yml"><h3>Detection Rules</h3><span class="go">Open →</span></a>
+    </div>
+
+    <h2>Team</h2>
+    <ul class="tight">
+      <li><b>Sajay Chandran</b> (Lead, 24BCAB220) — IR Lead: case management, timeline, playbook</li>
+      <li><b>Fathimat Afreen</b> (25BCAB104) — UBA &amp; credential-abuse detection</li>
+      <li><b>Gayathri Shajan</b> (24BCAB107) — DLP enforcement &amp; exfiltration tracking</li>
+      <li><b>Surya Krishnan E U</b> (24BCAB222) — endpoint forensics &amp; removable-media audit</li>
+    </ul>
+
+    <p class="callout warn" style="margin-top:20px">All data is simulated for academic evaluation. IPs use RFC 5737 documentation
+    ranges; domains are fictional and defanged with <code>[.]</code>.</p>
+
+    <div class="pager"><span></span><a href="dossier/case-summary.html">Case Summary &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="script.js"></script>
+</body>
+</html>

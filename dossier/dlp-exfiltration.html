@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>DLP & Exfil · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="dlp">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 05</div>
+      <h1>DLP Policy Enforcement &amp; Exfiltration Tracking</h1>
+      <p class="lead">What each data-loss-prevention policy did, how much data left by which channel, and the control gaps that let
+      part of it through. This is the quantitative core of the containment case.</p>
+      <span class="owner">Owner: <b>Gayathri Shajan</b> — DLP enforcement &amp; exfiltration volume</span>
+    </section>
+
+    <h2>Exfiltration by channel</h2>
+    <div class="hbar"><div class="row"><div>Personal cloud (cloudvault-sync[.]net)</div><div class="track"><span class="crit" style="width:69%"></span></div><div class="v">3.0 GB</div></div><div class="row" style="margin-top:-4px"><div></div><div style="font-size:12.5px;color:var(--muted)">Uncategorised domain allowed by proxy; DLP could not read encrypted payload</div><div class="v"><span class="badge b-crit">Succeeded</span></div></div><div class="row"><div>USB drive (Kingston DataTraveler)</div><div class="track"><span class="crit" style="width:100%"></span></div><div class="v">4.3 GB</div></div><div class="row" style="margin-top:-4px"><div></div><div style="font-size:12.5px;color:var(--muted)">R&D device-control policy in audit mode, not block</div><div class="v"><span class="badge b-crit">Succeeded (logged)</span></div></div><div class="row"><div>drop-share[.]xyz</div><div class="track"><span class="ok" style="width:2%"></span></div><div class="v">0</div></div><div class="row" style="margin-top:-4px"><div></div><div style="font-size:12.5px;color:var(--muted)">Proxy category: unsanctioned file sharing</div><div class="v"><span class="badge b-low">Blocked</span></div></div><div class="row"><div>Email to personal address</div><div class="track"><span class="ok" style="width:2%"></span></div><div class="v">0</div></div><div class="row" style="margin-top:-4px"><div></div><div style="font-size:12.5px;color:var(--muted)">DLP rule on >25 MB external attachments to free-mail domains</div><div class="v"><span class="badge b-low">Blocked</span></div></div></div>
+    <div class="grid grid-3" style="margin-top:14px">
+      <div class="card stat crit"><div class="num">7.3 GB</div><div class="label">Total that left controlled storage (cloud + USB; overlapping content)</div></div>
+      <div class="card stat ok"><div class="num">2</div><div class="label">Channels blocked outright (web file-share, email)</div></div>
+      <div class="card stat high"><div class="num">2</div><div class="label">Channels that succeeded — both now closed</div></div>
+    </div>
+
+    <h2>Policy-by-policy outcome</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>DLP / control policy</th><th>Triggered?</th><th>Outcome</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>Large attachment to external free-mail</td><td>Yes</td><td><span class="badge b-low">Blocked</span></td><td>Worked as designed — email channel closed to the actor</td></tr>
+          <tr><td>Unsanctioned file-sharing category</td><td>Yes</td><td><span class="badge b-low">Blocked</span></td><td>drop-share[.]xyz already categorised and denied</td></tr>
+          <tr><td>Endpoint agent tamper protection</td><td>Yes</td><td><span class="badge b-low">Held</span></td><td>Stop/disable attempt failed; raised DLP-ALR-5521</td></tr>
+          <tr><td>Content inspection of uploads</td><td>No</td><td><span class="badge b-crit">Bypassed</span></td><td>Payload was encrypted — DLP cannot read inside a password-protected archive</td></tr>
+          <tr><td>Newly-registered-domain blocking</td><td>No</td><td><span class="badge b-crit">Gap</span></td><td>Destination was 31 days old and uncategorised → allowed</td></tr>
+          <tr><td>Removable-media control (R&amp;D)</td><td>Logged only</td><td><span class="badge b-high">Audit mode</span></td><td>Policy recorded the write but did not block it</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>The two gaps, and the fixes</h2>
+    <div class="grid grid-2">
+      <div class="card"><h3>Gap 1 — encrypted uploads to new domains</h3><p>DLP can't inspect encrypted content, so the decision has to move
+      up to <i>context</i>: a large encrypted upload to a newly-registered, uncategorised domain is itself high-risk.
+      <b>Fix:</b> treat large encrypted egress as high-risk, and block newly-registered/uncategorised domains for sensitive groups.</p></div>
+      <div class="card"><h3>Gap 2 — USB in audit mode</h3><p>Device control saw and logged the 4.3 GB write but was not set to block it for
+      R&D. <b>Fix:</b> move R&D removable-media policy from audit to block; permit only approved, encrypted devices.</p></div>
+    </div>
+    <p class="callout">Both succeeding channels are mapped to <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a> (cloud) and <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1052/001/" target="_blank" rel="noopener">T1052.001</a> (USB) on the
+    <a href="attack-mapping.html">ATT&amp;CK page</a>, and every network indicator is in the <a href="../indicators/ioc-matrix.html">IOC matrix</a>.</p>
+
+    <div class="pager"><a href="../dossier/uba-analysis.html">&larr; UBA</a><a href="../dossier/forensic-evidence.html">Forensics &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>ATT&CK Mapping · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="attack">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 03</div>
+      <h1>MITRE ATT&amp;CK Mapping</h1>
+      <p class="lead">Fourteen techniques across eight tactics, each backed by a log source in the <a href="timeline.html">timeline</a>
+      and the <a href="../indicators/ioc-matrix.html">IOC matrix</a>. Every technique below also appears in the
+      <a href="https://github.com/center-for-threat-informed-defense/insider-threat-ttp-kb" target="_blank" rel="noopener">MITRE CTID
+      Insider Threat TTP knowledge base</a>, which is the assigned supporting dataset for this project.</p>
+      <span class="owner">Owners: <b>Fathimat</b> (Initial Access, Persistence) · <b>Sajay</b> (Defense Evasion, mapping review)</span>
+    </section>
+
+    <h2>Matrix view</h2>
+    <div class="legend">
+      <span><i style="background:rgba(255,93,108,.6)"></i>Technique observed</span>
+      <span><i style="background:rgba(245,213,71,.6)"></i>Attempted but blocked</span>
+    </div>
+    <div class="matrix"><div class="col"><h4>Initial Access<small>TA0001</small></h4><span class="tech"><b>T1133</b>External Remote Services</span><span class="tech"><b>T1078.002</b>Valid Accounts: Domain Accounts</span></div><div class="col"><h4>Persistence<small>TA0003</small></h4><span class="tech"><b>T1098</b>Account Manipulation</span></div><div class="col"><h4>Privilege Escalation<small>TA0004</small></h4><span class="tech"><b>T1078.002</b>Valid Accounts: Domain Accounts</span></div><div class="col"><h4>Defense Evasion<small>TA0005</small></h4><span class="tech attempted"><b>T1562.001</b>Impair Defenses: Disable or Modify Tools</span><span class="tech"><b>T1070.001</b>Indicator Removal: Clear Windows Event Logs</span><span class="tech"><b>T1036</b>Masquerading</span></div><div class="col"><h4>Discovery<small>TA0007</small></h4><span class="tech"><b>T1135</b>Network Share Discovery</span></div><div class="col"><h4>Collection<small>TA0009</small></h4><span class="tech"><b>T1039</b>Data from Network Shared Drive</span><span class="tech"><b>T1213.002</b>Data from Information Repositories: SharePoint</span><span class="tech"><b>T1114.001</b>Email Collection: Local Email Collection</span><span class="tech"><b>T1560.001</b>Archive Collected Data: Archive via Utility</span><span class="tech"><b>T1074.001</b>Data Staged: Local Data Staging</span></div><div class="col"><h4>Exfiltration<small>TA0010</small></h4><span class="tech"><b>T1567.002</b>Exfiltration to Cloud Storage</span><span class="tech"><b>T1052.001</b>Exfiltration over USB</span></div><div class="col"><h4>Impact<small>TA0040</small></h4><span class="tech"><b>T1657</b>Financial Theft / IP loss</span></div></div>
+
+    <h2>Evidence table</h2>
+    <div class="toolbar" data-table-filter="attackTable">
+      <input type="search" placeholder="Filter by tactic, technique ID or keyword…" aria-label="Filter techniques">
+      <span class="count"></span>
+    </div>
+    <div class="table-wrap">
+      <table id="attackTable">
+        <thead><tr><th>Tactic</th><th>Technique</th><th>Name</th><th>Status</th><th>Evidence</th></tr></thead>
+        <tbody>
+          <tr><td class='nowrap'>Initial Access</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1133/" target="_blank" rel="noopener">T1133</a></td><td>External Remote Services</td><td><span class="badge b-low">Observed</span></td><td>VPN used for all remote sessions with the subject's own account.</td></tr>
+<tr><td class='nowrap'>Initial Access</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1078/002/" target="_blank" rel="noopener">T1078.002</a></td><td>Valid Accounts: Domain Accounts</td><td><span class="badge b-low">Observed</span></td><td>Legitimate domain credentials + MFA; no compromise — the access itself was the abuse.</td></tr>
+<tr><td class='nowrap'>Persistence</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1098/" target="_blank" rel="noopener">T1098</a></td><td>Account Manipulation</td><td><span class="badge b-low">Observed</span></td><td>Self-added to the restricted RD-Formulations-RW group (EID 4728).</td></tr>
+<tr><td class='nowrap'>Privilege Escalation</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1078/002/" target="_blank" rel="noopener">T1078.002</a></td><td>Valid Accounts: Domain Accounts</td><td><span class="badge b-low">Observed</span></td><td>Stale IT-Helpdesk-Ops membership gave rights to modify R&D groups.</td></tr>
+<tr><td class='nowrap'>Defense Evasion</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1562/001/" target="_blank" rel="noopener">T1562.001</a></td><td>Impair Defenses: Disable or Modify Tools</td><td><span class="badge b-high">Attempted — blocked</span></td><td>Service-control attempt against the DLP agent — blocked by tamper protection (DLP-ALR-5521).</td></tr>
+<tr><td class='nowrap'>Defense Evasion</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1070/001/" target="_blank" rel="noopener">T1070.001</a></td><td>Indicator Removal: Clear Windows Event Logs</td><td><span class="badge b-low">Observed</span></td><td>Security log cleared (EID 1102); SIEM held a forwarded copy.</td></tr>
+<tr><td class='nowrap'>Defense Evasion</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1036/" target="_blank" rel="noopener">T1036</a></td><td>Masquerading</td><td><span class="badge b-low">Observed</span></td><td>Archive volumes named update_cache.tmp.* to blend in with system files.</td></tr>
+<tr><td class='nowrap'>Discovery</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1135/" target="_blank" rel="noopener">T1135</a></td><td>Network Share Discovery</td><td><span class="badge b-low">Observed</span></td><td>Enumerated shares/libraries made reachable by the new group membership.</td></tr>
+<tr><td class='nowrap'>Collection</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1039/" target="_blank" rel="noopener">T1039</a></td><td>Data from Network Shared Drive</td><td><span class="badge b-low">Observed</span></td><td>1,842 files read from the R&D formulation share.</td></tr>
+<tr><td class='nowrap'>Collection</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1213/002/" target="_blank" rel="noopener">T1213.002</a></td><td>Data from Information Repositories: SharePoint</td><td><span class="badge b-low">Observed</span></td><td>612 files pulled from the Phase II clinical-trial site.</td></tr>
+<tr><td class='nowrap'>Collection</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1114/001/" target="_blank" rel="noopener">T1114.001</a></td><td>Email Collection: Local Email Collection</td><td><span class="badge b-low">Observed</span></td><td>3.1 GB mailbox export (PST).</td></tr>
+<tr><td class='nowrap'>Collection</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td><td>Archive Collected Data: Archive via Utility</td><td><span class="badge b-low">Observed</span></td><td>Portable archiver produced password-protected, header-encrypted split volumes.</td></tr>
+<tr><td class='nowrap'>Collection</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1074/001/" target="_blank" rel="noopener">T1074.001</a></td><td>Data Staged: Local Data Staging</td><td><span class="badge b-low">Observed</span></td><td>Hidden temp folder used to consolidate 2,454 files before archiving.</td></tr>
+<tr><td class='nowrap'>Exfiltration</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td><td>Exfiltration to Cloud Storage</td><td><span class="badge b-low">Observed</span></td><td>~3.0 GB uploaded to cloudvault-sync[.]net (one earlier attempt to drop-share[.]xyz was blocked).</td></tr>
+<tr><td class='nowrap'>Exfiltration</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1052/001/" target="_blank" rel="noopener">T1052.001</a></td><td>Exfiltration over USB</td><td><span class="badge b-low">Observed</span></td><td>4.3 GB copied to a personal USB drive (policy was in audit mode).</td></tr>
+<tr><td class='nowrap'>Impact</td><td class='nowrap'><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1657/" target="_blank" rel="noopener">T1657</a></td><td>Financial Theft / IP loss</td><td><span class="badge b-low">Observed</span></td><td>Loss of proprietary formulation IP and regulated personal data — the business impact of the incident.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Reading the mapping</h2>
+    <div class="grid grid-2">
+      <div class="card"><h3>Why no "malware" techniques</h3><p>This is a living-off-the-land insider case. There is no phishing, no
+      exploit and no implant — the actor used legitimate access and built-in or portable tools. That is typical of insider threats and
+      is exactly why behavioural detection (UBA) mattered more than signature-based antivirus here.</p></div>
+      <div class="card"><h3>Observed vs. attempted</h3><p>Two Defense-Evasion techniques were <b>attempted but failed</b>: the DLP
+      tamper attempt (tamper protection held) and — in effect — log clearing (the SIEM already had the logs). We map attempted
+      techniques too, because the <i>attempt</i> is itself high-value detection signal.</p></div>
+    </div>
+
+    <div class="pager"><a href="../dossier/timeline.html">&larr; Timeline</a><a href="../indicators/ioc-matrix.html">IOC Matrix &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

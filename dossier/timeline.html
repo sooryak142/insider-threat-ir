@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>Timeline · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="timeline">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Dossier · 02</div>
+      <h1>Incident Timeline</h1>
+      <p class="lead">25 time-stamped events reconstructed from VPN, directory, file-server, SharePoint, EDR, DLP, proxy and
+      SIEM logs. Colour shows whether each entry is an adversary action, a detection, or a response action.</p>
+      <span class="owner">Owner: <b>Sajay Chandran</b> — timeline reconstruction &amp; defence</span>
+    </section>
+
+    <div class="toolbar">
+      <button class="btn active" data-tl-filter="all">All</button>
+      <button class="btn" data-tl-filter="attacker">Adversary actions</button>
+      <button class="btn" data-tl-filter="detection">Detections</button>
+      <button class="btn" data-tl-filter="response">Response</button>
+    </div>
+
+    <div class="legend">
+      <span><i style="background:var(--crit)"></i>Adversary action</span>
+      <span><i style="background:var(--med)"></i>Detection</span>
+      <span><i style="background:var(--low)"></i>Response</span>
+    </div>
+
+    <div class="timeline">
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-14 10:05 IST</div>
+          <div class="tl-title">Resignation submitted</div>
+          <div>Subject E-2231 gives notice; HR records destination as a competitor. No security action taken at this point — later identified as the missed trigger for 'leaver watch'.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: HR system</span></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-16 22:41 IST</div>
+          <div class="tl-title">First off-hours VPN login</div>
+          <div>Account connects over VPN from home IP 203.0.113.45 at 22:41 — outside the subject's 09:00–18:30 baseline.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: VPN / RADIUS</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1133/" target="_blank" rel="noopener">T1133</a></div>
+        </div>
+      </div>
+      <div class="tl-item detection">
+        <div class="card">
+          <div class="tl-time">2026-09-16 23:02 IST</div>
+          <div class="tl-title">UBA notes anomaly (low)</div>
+          <div>Behaviour engine records a minor deviation (off-hours access) and nudges the daily risk score to 38. Below alert threshold.</div>
+          <div class="tl-meta"><span class="badge b-med">Detection</span><span class="src">Source: UBA</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1078/002/" target="_blank" rel="noopener">T1078.002</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-18 23:12 IST</div>
+          <div class="tl-title">Self-added to restricted group</div>
+          <div>Account adds itself to RD-Formulations-RW using leftover IT-Helpdesk-Ops rights from a prior role. Directory change event recorded.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: AD / Directory audit (EID 4728)</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1098/" target="_blank" rel="noopener">T1098</a></div>
+        </div>
+      </div>
+      <div class="tl-item detection">
+        <div class="card">
+          <div class="tl-time">2026-09-18 23:15 IST</div>
+          <div class="tl-title">Privileged group change logged</div>
+          <div>SIEM ingests the group-membership change but has no alert rule for it yet — visible only in retrospect. (This case produced the new Sigma rule.)</div>
+          <div class="tl-meta"><span class="badge b-med">Detection</span><span class="src">Source: SIEM</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1098/" target="_blank" rel="noopener">T1098</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-20 21:30 IST</div>
+          <div class="tl-title">Discovery of accessible shares</div>
+          <div>Account enumerates file shares and SharePoint libraries newly reachable after the privilege change.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: File server / SharePoint audit</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1135/" target="_blank" rel="noopener">T1135</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-22 22:15 IST</div>
+          <div class="tl-title">Mailbox exported to PST</div>
+          <div>A 3.1 GB export of the subject's own mailbox is created.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: Exchange audit</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1114/001/" target="_blank" rel="noopener">T1114.001</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-23 22:40 IST</div>
+          <div class="tl-title">Bulk file-share reads begin</div>
+          <div>1,842 files read from \\KBS-FS01\RD\Formulations over two nights — read rate ~30× the subject's baseline.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: File server audit (EID 4663)</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1039/" target="_blank" rel="noopener">T1039</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-24 20:10 IST</div>
+          <div class="tl-title">SharePoint bulk download</div>
+          <div>612 files downloaded from the Phase II clinical-trial site in a short window.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: SharePoint / M365 audit</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1213/002/" target="_blank" rel="noopener">T1213.002</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-24 21:30 IST</div>
+          <div class="tl-title">Local staging folder created</div>
+          <div>Collected files consolidated into a hidden temp folder on the laptop.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: EDR file events</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1074/001/" target="_blank" rel="noopener">T1074.001</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-24 21:47 IST</div>
+          <div class="tl-title">Encrypted archiving observed</div>
+          <div>EDR reports a portable archiver creating password-protected, split archive volumes — contents opaque to DLP.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: EDR process events</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></div>
+        </div>
+      </div>
+      <div class="tl-item detection">
+        <div class="card">
+          <div class="tl-time">2026-09-25 23:05 IST</div>
+          <div class="tl-title">DLP tamper attempt blocked</div>
+          <div>A service-control attempt against the DLP agent is blocked by tamper protection; alert DLP-ALR-5521 raised. Risk score jumps to 72.</div>
+          <div class="tl-meta"><span class="badge b-med">Detection</span><span class="src">Source: DLP agent</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1562/001/" target="_blank" rel="noopener">T1562.001</a></div>
+        </div>
+      </div>
+      <div class="tl-item detection">
+        <div class="card">
+          <div class="tl-time">2026-09-26 23:18 IST</div>
+          <div class="tl-title">First exfiltration attempt blocked</div>
+          <div>Upload to drop-share[.]xyz denied by the web proxy (category: unsanctioned file sharing).</div>
+          <div class="tl-meta"><span class="badge b-med">Detection</span><span class="src">Source: Web proxy</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-26 23:41 IST</div>
+          <div class="tl-title">Upload to personal cloud succeeds</div>
+          <div>~3.0 GB uploaded over HTTPS to cloudvault-sync[.]net, a 31-day-old uncategorised domain the proxy allowed.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: Web proxy / firewall</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></div>
+        </div>
+      </div>
+      <div class="tl-item detection">
+        <div class="card">
+          <div class="tl-time">2026-09-26 23:58 IST</div>
+          <div class="tl-title">CRITICAL UBA alert (UBA-3341)</div>
+          <div>Combined off-hours access + privilege change + mass reads + encrypted archiving + large upload pushes the risk score past 90. Alert auto-correlates with DLP-ALR-5521 and pages the on-call analyst.</div>
+          <div class="tl-meta"><span class="badge b-med">Detection</span><span class="src">Source: UBA + SIEM</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-09-27 00:35 IST</div>
+          <div class="tl-title">Triage begins</div>
+          <div>On-call analyst validates the alert is a true positive, opens case KBS-IR-2026-017 and escalates to the IR Lead.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IR process</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-09-27 02:40 IST</div>
+          <div class="tl-title">CERT-In notification filed</div>
+          <div>Within the 6-hour window, the suspected exfiltration is reported to CERT-In.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IR Lead / Compliance</span></div>
+        </div>
+      </div>
+      <div class="tl-item attacker">
+        <div class="card">
+          <div class="tl-time">2026-09-27 13:06 IST</div>
+          <div class="tl-title">USB copy during office visit</div>
+          <div>Subject visits the office on a Sunday; 4.3 GB of archive volumes copied to a personal USB drive. R&D USB policy was in audit mode, so the write was logged but not blocked.</div>
+          <div class="tl-meta"><span class="badge b-crit">Adversary action</span><span class="src">Source: Device-control audit</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1052/001/" target="_blank" rel="noopener">T1052.001</a></div>
+        </div>
+      </div>
+      <div class="tl-item detection">
+        <div class="card">
+          <div class="tl-time">2026-09-28 01:11 IST</div>
+          <div class="tl-title">Security log cleared — caught</div>
+          <div>Local Windows Security log cleared (EID 1102) on the laptop. SIEM already holds a forwarded copy, so nothing is lost; the clearing itself raises an alert.</div>
+          <div class="tl-meta"><span class="badge b-med">Detection</span><span class="src">Source: SIEM</span> <a class="badge b-tech" href="https://attack.mitre.org/techniques/T1070/001/" target="_blank" rel="noopener">T1070.001</a></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-09-28 11:00 IST</div>
+          <div class="tl-title">P1 incident declared</div>
+          <div>IR Lead declares a P1 and convenes the response team; containment plan approved.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IR process</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-09-28 11:45 IST</div>
+          <div class="tl-title">Containment executed</div>
+          <div>Account disabled, all sessions and tokens revoked, VPN certificate revoked, laptop network-isolated via EDR.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IR team</span> <span class="badge b-info">M1018</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-09-28 14:20 IST</div>
+          <div class="tl-title">Forensic preservation</div>
+          <div>Laptop imaged (EV-01), VPN/proxy/SIEM logs exported (EV-02), USB later recovered and imaged (EV-03). Hashes recorded.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: Forensics (Surya)</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-09-29 10:00 IST</div>
+          <div class="tl-title">Scope confirmed</div>
+          <div>Analysis confirms what left the environment and via which channels; cloud provider sent a preservation/takedown request.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IR team</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-10-02 16:00 IST</div>
+          <div class="tl-title">Eradication &amp; hardening</div>
+          <div>Stale group memberships cleaned up org-wide; approval workflow added for restricted-group changes; destination domains blocked.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IT &amp; IR</span></div>
+        </div>
+      </div>
+      <div class="tl-item response">
+        <div class="card">
+          <div class="tl-time">2026-10-09 15:00 IST</div>
+          <div class="tl-title">Lessons-learned review</div>
+          <div>Root cause (stale privileged access) agreed; six recommendations issued; four Sigma detections handed to the SOC. Case closed.</div>
+          <div class="tl-meta"><span class="badge b-low">Response</span><span class="src">Source: IR team</span></div>
+        </div>
+      </div>
+    </div>
+
+    <h2>Key intervals</h2>
+    <div class="grid grid-3">
+      <div class="card stat"><div class="num" style="font-size:22px">10 d 1 h</div><div class="label">Dwell time — first off-hours login to critical alert</div></div>
+      <div class="card stat"><div class="num" style="font-size:22px">~5 h</div><div class="label">Alert to triage + CERT-In notification</div></div>
+      <div class="card stat"><div class="num" style="font-size:22px">36 h 47 m</div><div class="label">Critical alert to full containment</div></div>
+    </div>
+    <p class="callout warn">The dwell time is the headline lesson: individual signals existed from day one (off-hours access, a
+    privileged group change), but no single rule fired until the behaviour compounded. The new detections push the alert point back
+    to the <b>privilege-change</b> step on 18 Sep — cutting dwell time from ten days to hours.</p>
+
+    <div class="pager"><a href="../dossier/case-summary.html">&larr; Case Summary</a><a href="../dossier/attack-mapping.html">ATT&amp;CK Mapping &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>

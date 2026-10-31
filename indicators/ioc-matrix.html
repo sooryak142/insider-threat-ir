@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Group 5 incident response dossier: insider threat, privilege abuse and data exfiltration (Case KBS-IR-2026-017).">
+  <title>IOC Matrix · KBS-IR-2026-017 · Group 5</title>
+  <link rel="stylesheet" href="../style.css">
+</head>
+<body data-page="iocs">
+  <header class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="../index.html">
+        <span class="brand-mark">IR</span>
+        <span>KBS-IR-2026-017<small>Insider Threat &amp; Data Exfiltration</small></span>
+      </a>
+      <nav class="nav" aria-label="Dossier sections">
+        <a href="../index.html" data-page="home">Overview</a>
+        <a href="../dossier/case-summary.html" data-page="summary">Case Summary</a>
+        <a href="../dossier/timeline.html" data-page="timeline">Timeline</a>
+        <a href="../dossier/attack-mapping.html" data-page="attack">ATT&amp;CK Mapping</a>
+        <a href="../indicators/ioc-matrix.html" data-page="iocs">IOC Matrix</a>
+        <a href="../dossier/uba-analysis.html" data-page="uba">UBA</a>
+        <a href="../dossier/dlp-exfiltration.html" data-page="dlp">DLP &amp; Exfil</a>
+        <a href="../dossier/forensic-evidence.html" data-page="forensics">Forensics</a>
+        <a href="../dossier/playbook.html" data-page="playbook">Playbook</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <section class="page-head">
+      <div class="eyebrow">Indicators · IOC Matrix</div>
+      <h1>Indicator of Compromise Matrix</h1>
+      <p class="lead">20 indicators extracted during the investigation — network, file, host, identity, removable-media and
+      behavioural. Search or filter below; every value has a copy button. Machine-readable exports:
+      <a href="iocs.json">iocs.json</a> · <a href="iocs.csv">iocs.csv</a> · <a href="detections.yml">detections.yml</a> (Sigma).</p>
+      <span class="owner">Owners: <b>Gayathri</b> (network) · <b>Surya</b> (file/host/USB) · <b>Fathimat</b> (identity)</span>
+    </section>
+
+    <div class="toolbar" data-table-filter="iocTable">
+      <input type="search" placeholder="Search indicators, descriptions, actions…" aria-label="Search indicators">
+      <select aria-label="Filter by indicator type"><option value="">All types</option><option value="ip">IP address</option><option value="domain">Domain</option><option value="hash">SHA-256</option><option value="file">File path</option><option value="account">Account / group</option><option value="host">Host</option><option value="usb">USB device</option><option value="behaviour">Behavioural signal</option></select>
+      <span class="count"></span>
+    </div>
+
+    <div class="table-wrap">
+      <table id="iocTable">
+        <thead><tr><th>Type</th><th>Indicator</th><th>Description</th><th class="nowrap">First seen (IST)</th><th>ATT&amp;CK</th><th>Conf.</th><th>Response action</th><th>Owner</th></tr></thead>
+        <tbody>
+          <tr data-type="ip"><td class="nowrap"><span class="badge b-info">IP address</span></td><td><code>203.0.113.45</code><button class="btn btn-copy" data-copy="203.0.113.45">copy</button></td><td>Subject&#x27;s home broadband IP; source of all off-hours VPN sessions (16–26 Sep)</td><td class="nowrap mono">2026-09-16 22:41</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1078/002/" target="_blank" rel="noopener">T1078.002</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Alert on any VPN session post-termination; retained as evidence</td><td class="nowrap">Fathimat</td></tr>
+<tr data-type="ip"><td class="nowrap"><span class="badge b-info">IP address</span></td><td><code>198.51.100.77</code><button class="btn btn-copy" data-copy="198.51.100.77">copy</button></td><td>Upload endpoint behind cloudvault-sync[.]net — received 3.0 GB over HTTPS</td><td class="nowrap mono">2026-09-26 23:41</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Blocked at perimeter firewall and web proxy</td><td class="nowrap">Gayathri</td></tr>
+<tr data-type="ip"><td class="nowrap"><span class="badge b-info">IP address</span></td><td><code>198.51.100.212</code><button class="btn btn-copy" data-copy="198.51.100.212">copy</button></td><td>drop-share[.]xyz upload host — attempt denied by proxy category policy</td><td class="nowrap mono">2026-09-26 23:18</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td><td class="nowrap"><span class="badge b-high">Medium</span></td><td>Blocked at perimeter firewall</td><td class="nowrap">Gayathri</td></tr>
+<tr data-type="domain"><td class="nowrap"><span class="badge b-info">Domain</span></td><td><code>cloudvault-sync[.]net</code><button class="btn btn-copy" data-copy="cloudvault-sync[.]net">copy</button></td><td>Personal cloud-storage service; newly registered (31 days), proxy category &#x27;Uncategorized&#x27; so it was allowed</td><td class="nowrap mono">2026-09-26 23:39</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Added to proxy deny list; takedown / preservation request sent</td><td class="nowrap">Gayathri</td></tr>
+<tr data-type="domain"><td class="nowrap"><span class="badge b-info">Domain</span></td><td><code>api.cloudvault-sync[.]net</code><button class="btn btn-copy" data-copy="api.cloudvault-sync[.]net">copy</button></td><td>Chunked-upload API host used by the browser upload client</td><td class="nowrap mono">2026-09-26 23:41</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Added to proxy and DNS sinkhole</td><td class="nowrap">Gayathri</td></tr>
+<tr data-type="domain"><td class="nowrap"><span class="badge b-info">Domain</span></td><td><code>drop-share[.]xyz</code><button class="btn btn-copy" data-copy="drop-share[.]xyz">copy</button></td><td>Unsanctioned file-sharing site; first exfiltration attempt (blocked)</td><td class="nowrap mono">2026-09-26 23:18</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1567/002/" target="_blank" rel="noopener">T1567.002</a></td><td class="nowrap"><span class="badge b-high">Medium</span></td><td>Already blocked (File Sharing – Unsanctioned)</td><td class="nowrap">Gayathri</td></tr>
+<tr data-type="hash"><td class="nowrap"><span class="badge b-info">SHA-256</span></td><td><code>115b80d86e6d0909b23af7cce552b44ea6fc6e51f7006b5fbf39814bd4ce4aed</code><button class="btn btn-copy" data-copy="115b80d86e6d0909b23af7cce552b44ea6fc6e51f7006b5fbf39814bd4ce4aed">copy</button></td><td>update_cache.tmp.001 — AES-256 encrypted 7-Zip volume (1.5 GB), uploaded to cloud</td><td class="nowrap mono">2026-09-24 21:52</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Hash watch-listed in EDR &amp; DLP fingerprint DB</td><td class="nowrap">Surya</td></tr>
+<tr data-type="hash"><td class="nowrap"><span class="badge b-info">SHA-256</span></td><td><code>5bd14d23b268ac9a037aad6635a6249d922b8d5e174189efcbd6bec59b90c928</code><button class="btn btn-copy" data-copy="5bd14d23b268ac9a037aad6635a6249d922b8d5e174189efcbd6bec59b90c928">copy</button></td><td>update_cache.tmp.002 — encrypted 7-Zip volume (1.5 GB), uploaded to cloud</td><td class="nowrap mono">2026-09-24 21:55</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Hash watch-listed in EDR &amp; DLP fingerprint DB</td><td class="nowrap">Surya</td></tr>
+<tr data-type="hash"><td class="nowrap"><span class="badge b-info">SHA-256</span></td><td><code>53ae847aba07c6bf20cd3e3f19473a3bfd50dd8529c3a46ff3728ca3f7c552fe</code><button class="btn btn-copy" data-copy="53ae847aba07c6bf20cd3e3f19473a3bfd50dd8529c3a46ff3728ca3f7c552fe">copy</button></td><td>update_cache.tmp.003 — encrypted 7-Zip volume (1.3 GB), copied to USB only</td><td class="nowrap mono">2026-09-24 21:57</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Hash watch-listed in EDR &amp; DLP fingerprint DB</td><td class="nowrap">Surya</td></tr>
+<tr data-type="hash"><td class="nowrap"><span class="badge b-info">SHA-256</span></td><td><code>4d4e46b1d13569f7079185d9d15e51f436610d5da3c17ee6b4b853c52fb2859c</code><button class="btn btn-copy" data-copy="4d4e46b1d13569f7079185d9d15e51f436610d5da3c17ee6b4b853c52fb2859c">copy</button></td><td>7z.exe (portable 7-Zip 24.08, unsigned copy in Downloads) — legitimate tool, unsanctioned use</td><td class="nowrap mono">2026-09-24 21:47</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td><td class="nowrap"><span class="badge b-high">Medium</span></td><td>Application control: block portable archivers outside IT image</td><td class="nowrap">Surya</td></tr>
+<tr data-type="hash"><td class="nowrap"><span class="badge b-info">SHA-256</span></td><td><code>5063ee9603e58a64dad18856710fb15ba305538522fb868dee5cc9ede452752a</code><button class="btn btn-copy" data-copy="5063ee9603e58a64dad18856710fb15ba305538522fb868dee5cc9ede452752a">copy</button></td><td>cleanup.bat — runs wevtutil cl Security and deletes the staging folder</td><td class="nowrap mono">2026-09-28 01:10</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1070/001/" target="_blank" rel="noopener">T1070.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Hash blocked in EDR; script recovered from $MFT</td><td class="nowrap">Surya</td></tr>
+<tr data-type="hash"><td class="nowrap"><span class="badge b-info">SHA-256</span></td><td><code>d7c4a7f673fd21f6b02214f0054c6382caa013a29bf15a7b9cdc1d472c7a1883</code><button class="btn btn-copy" data-copy="d7c4a7f673fd21f6b02214f0054c6382caa013a29bf15a7b9cdc1d472c7a1883">copy</button></td><td>KBS_mail_export.pst — 3.1 GB mailbox export (archived into the 7-Zip set)</td><td class="nowrap mono">2026-09-22 22:15</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1114/001/" target="_blank" rel="noopener">T1114.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Hash recorded for evidence matching</td><td class="nowrap">Surya</td></tr>
+<tr data-type="file"><td class="nowrap"><span class="badge b-info">File path</span></td><td><code>C:\Users\e2231\AppData\Local\Temp\mscache\\</code><button class="btn btn-copy" data-copy="C:\Users\e2231\AppData\Local\Temp\mscache\\">copy</button></td><td>Local staging folder for 2,454 collected files and the PST (later deleted)</td><td class="nowrap mono">2026-09-24 21:30</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1074/001/" target="_blank" rel="noopener">T1074.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Folder path added to EDR custom detection</td><td class="nowrap">Surya</td></tr>
+<tr data-type="account"><td class="nowrap"><span class="badge b-info">Account / group</span></td><td><code>KBS\e2231</code><button class="btn btn-copy" data-copy="KBS\e2231">copy</button></td><td>Subject&#x27;s domain account (Senior Formulation Data Analyst)</td><td class="nowrap mono">2026-09-16 22:41</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1078/002/" target="_blank" rel="noopener">T1078.002</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Disabled 28 Sep 11:45; sessions &amp; tokens revoked</td><td class="nowrap">Sajay</td></tr>
+<tr data-type="account"><td class="nowrap"><span class="badge b-info">Account / group</span></td><td><code>RD-Formulations-RW</code><button class="btn btn-copy" data-copy="RD-Formulations-RW">copy</button></td><td>AD security group the subject added himself to using leftover IT-Helpdesk-Ops rights</td><td class="nowrap mono">2026-09-18 23:12</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1098/" target="_blank" rel="noopener">T1098</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Membership removed; group changes now require approval</td><td class="nowrap">Fathimat</td></tr>
+<tr data-type="host"><td class="nowrap"><span class="badge b-info">Host</span></td><td><code>KBS-LT-0412</code><button class="btn btn-copy" data-copy="KBS-LT-0412">copy</button></td><td>Subject&#x27;s corporate laptop (Windows 11, EDR + DLP agent)</td><td class="nowrap mono">2026-09-16 22:41</td><td class="nowrap">—</td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Network-isolated via EDR, imaged, held as evidence EV-01</td><td class="nowrap">Surya</td></tr>
+<tr data-type="usb"><td class="nowrap"><span class="badge b-info">USB device</span></td><td><code>USBSTOR\Disk&amp;Ven_Kingston&amp;Prod_DataTraveler_3.0 · S/N E0D55EA5741F</code><button class="btn btn-copy" data-copy="USBSTOR\Disk&amp;Ven_Kingston&amp;Prod_DataTraveler_3.0 · S/N E0D55EA5741F">copy</button></td><td>Personal USB drive; received all three archive volumes (4.3 GB)</td><td class="nowrap mono">2026-09-27 13:06</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1052/001/" target="_blank" rel="noopener">T1052.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Device ID blocked by device control; drive recovered (EV-03)</td><td class="nowrap">Surya</td></tr>
+<tr data-type="behaviour"><td class="nowrap"><span class="badge b-info">Behavioural signal</span></td><td><code>Portable archiver run with password + encrypted-header flags, split output</code><button class="btn btn-copy" data-copy="Portable archiver run with password + encrypted-header flags, split output">copy</button></td><td>Process-creation log showed a portable 7-Zip producing password-protected, split archive volumes — contents opaque to DLP</td><td class="nowrap mono">2026-09-24 21:47</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1560/001/" target="_blank" rel="noopener">T1560.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>EDR detection: non-image archiver creating encrypted, header-encrypted archives</td><td class="nowrap">Surya</td></tr>
+<tr data-type="behaviour"><td class="nowrap"><span class="badge b-info">Behavioural signal</span></td><td><code>Service-control attempt against the DLP endpoint agent</code><button class="btn btn-copy" data-copy="Service-control attempt against the DLP endpoint agent">copy</button></td><td>Attempt to stop/disable the DLP agent service — blocked by tamper protection; the attempt itself is the signal</td><td class="nowrap mono">2026-09-25 23:05</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1562/001/" target="_blank" rel="noopener">T1562.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>Alert DLP-ALR-5521 raised; tamper-protection rule retained</td><td class="nowrap">Gayathri</td></tr>
+<tr data-type="behaviour"><td class="nowrap"><span class="badge b-info">Behavioural signal</span></td><td><code>Security event log cleared on the endpoint (Windows EID 1102)</code><button class="btn btn-copy" data-copy="Security event log cleared on the endpoint (Windows EID 1102)">copy</button></td><td>Local Security log cleared; SIEM already held a forwarded copy, so the record survived</td><td class="nowrap mono">2026-09-28 01:11</td><td class="nowrap"><a class="badge b-tech" href="https://attack.mitre.org/techniques/T1070/001/" target="_blank" rel="noopener">T1070.001</a></td><td class="nowrap"><span class="badge b-crit">High</span></td><td>SIEM correlation on EID 1102 from a non-admin workstation account</td><td class="nowrap">Sajay</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>How to read this matrix</h2>
+    <div class="grid grid-3">
+      <div class="card"><h3>Confidence</h3><p><span class="badge b-crit">High</span> directly tied to the subject's activity by a
+      log. <span class="badge b-high">Medium</span> supporting / contextual. Grading note: confidence is evidence-based, not a guess.</p></div>
+      <div class="card"><h3>Defanging</h3><p>Domains are written <code>name[.]tld</code> so the dossier can be shared safely without
+      creating a clickable link to a (fictional) malicious host. Replace <code>[.]</code> with <code>.</code> for tooling.</p></div>
+      <div class="card"><h3>Simulated data</h3><p>IPs are RFC 5737 documentation ranges; hashes are generated for the exercise. They
+      are structurally valid for demonstrating tooling but do not correspond to real infrastructure.</p></div>
+    </div>
+
+    <div class="pager"><a href="../dossier/attack-mapping.html">&larr; ATT&amp;CK Mapping</a><a href="../dossier/uba-analysis.html">UBA &rarr;</a></div>
+  </main>
+
+  <footer class="footer">
+    <p>Group 5 · Yenepoya (Deemed to be University) × IBM ICE · Threat Intelligence &amp; Incident Response · October 2026</p>
+    <p>Simulated case for academic evaluation. The organisation, people, domains and file hashes are fictional; IP addresses use RFC 5737 documentation ranges.</p>
+  </footer>
+  <script src="../script.js"></script>
+</body>
+</html>
